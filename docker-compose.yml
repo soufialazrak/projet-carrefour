@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: datamarket_pg
+    environment:
+      POSTGRES_USER: datamarket_user
+      POSTGRES_PASSWORD: datamarket_pwd
+      POSTGRES_DB: datamarket
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U datamarket_user -d datamarket"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pgdata:
