@@ -5,19 +5,21 @@ PROJECT_DIR = r"C:\Users\soufi\Documents\projet-carrefour"
 DATA_DIR = os.path.join(PROJECT_DIR, "data")
 
 IN_PRODUCTS = os.path.join(DATA_DIR, "products_clean.csv")
+IN_CATEGORIES = os.path.join(DATA_DIR, "outputs", "product_categories.csv")
 
 OUT_DIR = os.path.join(DATA_DIR, "outputs")
 os.makedirs(OUT_DIR, exist_ok=True)
 
-OUT_FILE = os.path.join(OUT_DIR, "products.csv")
+OUT_PRODUCTS = os.path.join(OUT_DIR, "products.csv")
 
 
 def main():
     print("Script export_products démarré...")
 
     products = pd.read_csv(IN_PRODUCTS)
+    categories = pd.read_csv(IN_CATEGORIES)
 
-    required_cols = {
+    required_product_cols = {
         "product_id",
         "product_category_name",
         "product_weight_g",
@@ -25,23 +27,49 @@ def main():
         "product_height_cm",
         "product_width_cm",
     }
-    missing = required_cols - set(products.columns)
-    if missing:
-        raise ValueError(f"Missing columns in products_clean: {missing}")
+    missing_products = required_product_cols - set(products.columns)
+    if missing_products:
+        raise ValueError(f"Missing columns in products_clean: {missing_products}")
 
-    out = (
-        products[list(required_cols)]
+    required_category_cols = {"category_id", "category_name"}
+    missing_categories = required_category_cols - set(categories.columns)
+    if missing_categories:
+        raise ValueError(f"Missing columns in product_categories.csv: {missing_categories}")
+
+    products["product_category_name"] = products["product_category_name"].fillna("unknown")
+
+    products = products.merge(
+        categories,
+        left_on="product_category_name",
+        right_on="category_name",
+        how="left"
+    )
+
+    if products["category_id"].isna().any():
+        missing_names = products.loc[products["category_id"].isna(), "product_category_name"].drop_duplicates().tolist()
+        raise ValueError(f"Unmapped product categories found: {missing_names}")
+
+    out_products = (
+        products[[
+            "product_id",
+            "category_id",
+            "product_weight_g",
+            "product_length_cm",
+            "product_height_cm",
+            "product_width_cm",
+        ]]
         .drop_duplicates(subset=["product_id"])
         .copy()
     )
 
-    if out["product_id"].isna().any():
+    if out_products["product_id"].isna().any():
         raise ValueError("Null product_id found")
-    if out["product_id"].duplicated().any():
+
+    if out_products["product_id"].duplicated().any():
         raise ValueError("Duplicate product_id found")
 
-    out.to_csv(OUT_FILE, index=False)
-    print(f"[OK] Exported {len(out):,} rows -> {OUT_FILE}")
+    out_products.to_csv(OUT_PRODUCTS, index=False)
+    print(f"[OK] Exported {len(out_products):,} rows -> {OUT_PRODUCTS}")
 
 
 if __name__ == "__main__":

@@ -1,18 +1,23 @@
 services:
   postgres:
     image: postgres:16
-    container_name: datamarket_pg
+    container_name: datamarket_carrefour_pg
+
     environment:
-      POSTGRES_USER: datamarket_user
-      POSTGRES_PASSWORD: datamarket_pwd
-      POSTGRES_DB: datamarket
+      POSTGRES_USER: soufia
+      POSTGRES_PASSWORD: soufia
+      POSTGRES_DB: datamarket_carrefour
+
     ports:
       - "5432:5432"
+
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./init:/docker-entrypoint-initdb.d
+      - ./data/outputs:/data/csv
+
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U datamarket_user -d datamarket"]
+      test: ["CMD-SHELL", "pg_isready -U soufia -d datamarket_carrefour"]
       interval: 5s
       timeout: 5s
       retries: 10

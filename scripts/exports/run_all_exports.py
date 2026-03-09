@@ -6,10 +6,10 @@ SCRIPTS = [
     "export_foyers.py",
     "export_customers.py",
     "export_loyalty_cards.py",
+    "export_product_categories.py",
+    "export_products.py",
     "export_transactions.py",
     "export_transaction_items.py",
-    "export_products.py",
-    "export_product_categories.py",
 ]
 
 def main():
