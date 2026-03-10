@@ -36,15 +36,50 @@ Le modèle comprend les entités suivantes :
 Les diagrammes MCD et MLD sont disponibles dans le dossier :
 **diagrams**
 
+## Gold Layer
+
+La couche Gold contient des vues analytiques construites à partir des tables Silver.
+
+### Vues disponibles
+
+- transaction_amount : montant total d'une transaction
+- customer_value : valeur d'un client
+- foyer_rfm_metrics : métriques RFM par foyer
+- foyer_rfm_segments : segmentation marketing des foyers
+
+
+## Architecture Data
+
+Ce projet suit une architecture Medallion :
+
+- **Bronze** : données brutes et nettoyage dans les notebooks
+- **Silver** : tables normalisées dans PostgreSQL
+- **Gold** : vues analytiques et segmentation RFM
+
+
 ## Structure du projet
-projet-carrefour
-│
-├── data/ # données transformées
-├── notebooks/ # nettoyage et préparation des données
-├── scripts/ # scripts de transformation
-├── diagrams/ # MCD et MLD
-├── init/ # création du schéma PostgreSQL
-└── docker-compose.yml
+
+projet-carrefour/
+
+├── data/  
+│   ├── archive/                 ( dataset original Olist )  
+│   └── outputs/                 ( fichiers CSV générés pour alimenter la base (couche Silver))
+
+├── notebooks/                   ( nettoyage et préparation des données (Bronze))
+
+├── scripts/
+│   └── exports/                 ( scripts Python générant les tables Silver à partir des données nettoyées )
+
+├── sql/
+│   └── gold/                    ( vues analytiques (couche Gold) )
+
+├── init/                        ( scripts SQL de création du schéma PostgreSQL (tables Silver) )
+
+├── diagrams/                    ( MCD et MLD du modèle de données )
+
+├── docker-compose.yml           ( infrastructure PostgreSQL via Docker )
+
+└── README.md
 
 ## Technologies utilisées
 

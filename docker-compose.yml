@@ -15,6 +15,7 @@ services:
       - pgdata:/var/lib/postgresql/data
       - ./init:/docker-entrypoint-initdb.d
       - ./data/outputs:/data/csv
+      - ./sql:/sql
 
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U soufia -d datamarket_carrefour"]
