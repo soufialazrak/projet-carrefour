@@ -1,27 +1,41 @@
+version: "3.9"
+
 services:
   postgres:
     image: postgres:16
     container_name: datamarket_carrefour_pg
-
     environment:
       POSTGRES_USER: soufia
       POSTGRES_PASSWORD: soufia
       POSTGRES_DB: datamarket_carrefour
-
     ports:
       - "5432:5432"
-
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./init:/docker-entrypoint-initdb.d
       - ./data/outputs:/data/csv
       - ./sql:/sql
-
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U soufia -d datamarket_carrefour"]
       interval: 5s
       timeout: 5s
       retries: 10
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: datamarket_carrefour_api
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://soufia:soufia@postgres:5432/datamarket_carrefour
+    volumes:
+      - ./api:/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 volumes:
   pgdata:

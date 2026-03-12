@@ -1,0 +1,2 @@
+docker exec -it datamarket_carrefour_pg psql -U soufia -d datamarket_carrefour -f /sql/load_silver_tables.sql
+docker exec -it datamarket_carrefour_pg psql -U soufia -d datamarket_carrefour -f /sql/create_gold_all.sql
