@@ -1,4 +1,16 @@
-data/*.csv
-data/outputs/
-data/archive/
-capture/
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Environnements
+.env
+.venv
+venv/
+
+# Docker volumes
+pgdata/
+
+# OS
+.DS_Store
+Thumbs.db

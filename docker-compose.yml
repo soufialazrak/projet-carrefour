@@ -36,6 +36,18 @@ services:
     volumes:
       - ./api:/app
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-
+  streamlit:
+    build:
+      context: ./streamlit
+      dockerfile: Dockerfile
+    container_name: datamarket_carrefour_streamlit
+    depends_on:
+      - api
+    ports:
+      - "8501:8501"
+    environment:
+      API_BASE_URL: http://api:8000
+    volumes:
+      - ./streamlit:/app  
 volumes:
   pgdata:
