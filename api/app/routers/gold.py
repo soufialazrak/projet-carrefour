@@ -158,6 +158,10 @@ def get_foyer_rfm_segments(
             "limit": limit,
             "offset": offset
         }
+
+        count_params = {
+            "macro_segment": macro_segment
+        }
     else:
         query = text("""
             SELECT
@@ -185,11 +189,13 @@ def get_foyer_rfm_segments(
             "offset": offset
         }
 
+        count_params = {}
+
     with engine.connect() as connection:
         result = connection.execute(query, params)
         data = [dict(row._mapping) for row in result]
 
-        total = connection.execute(count_query, params).scalar()
+        total = connection.execute(count_query, count_params).scalar()
 
     return {
         "total": total,
@@ -282,3 +288,158 @@ def get_customer_value_by_customer_id(customer_id: str):
         raise HTTPException(status_code=404, detail="Customer value introuvable pour ce client")
 
     return dict(row._mapping)
+
+
+@router.get("/gold/kpis")
+def get_kpis():
+    query = text("""
+        SELECT
+            (SELECT COUNT(*) FROM datamarket.customers) AS nombre_clients,
+            (SELECT COUNT(*) FROM datamarket.foyers) AS nombre_foyers,
+            (SELECT COUNT(*) FROM datamarket.transactions) AS nombre_transactions,
+            (
+                SELECT COALESCE(SUM(transaction_amount), 0)
+                FROM gold.transaction_amount
+            ) AS chiffre_affaires_total
+    """)
+
+    with engine.connect() as connection:
+        result = connection.execute(query)
+        row = result.fetchone()
+
+    if row is None:
+        return {
+            "nombre_clients": 0,
+            "nombre_foyers": 0,
+            "nombre_transactions": 0,
+            "chiffre_affaires_total": 0.0
+        }
+
+    data = dict(row._mapping)
+
+    return {
+        "nombre_clients": int(data["nombre_clients"]),
+        "nombre_foyers": int(data["nombre_foyers"]),
+        "nombre_transactions": int(data["nombre_transactions"]),
+        "chiffre_affaires_total": float(data["chiffre_affaires_total"])
+    }
+
+
+@router.get("/gold/revenue_over_time")
+def revenue_over_time():
+    query = text("""
+        SELECT
+            DATE_TRUNC('month', transaction_timestamp)::date AS month,
+            SUM(transaction_amount) AS revenue
+        FROM gold.transaction_amount
+        GROUP BY DATE_TRUNC('month', transaction_timestamp)
+        ORDER BY month
+    """)
+
+    with engine.connect() as connection:
+        result = connection.execute(query)
+        rows = result.fetchall()
+
+    return [
+        {
+            "month": str(row._mapping["month"]),
+            "revenue": float(row._mapping["revenue"])
+        }
+        for row in rows
+    ]
+
+
+@router.get("/gold/rfm/macro-segment-count")
+def get_macro_segment_count():
+    query = text("""
+        SELECT
+            macro_segment,
+            COUNT(*) AS count
+        FROM gold.foyer_rfm_segments
+        GROUP BY macro_segment
+        ORDER BY count DESC
+    """)
+
+    with engine.connect() as connection:
+        result = connection.execute(query)
+        rows = result.fetchall()
+
+    return [
+        {
+            "macro_segment": row._mapping["macro_segment"],
+            "count": int(row._mapping["count"])
+        }
+        for row in rows
+    ]
+
+
+@router.get("/gold/rfm/recency-segment-count")
+def get_recency_segment_count():
+    query = text("""
+        SELECT
+            recency_segment,
+            COUNT(*) AS count
+        FROM gold.foyer_rfm_segments
+        GROUP BY recency_segment
+        ORDER BY count DESC
+    """)
+
+    with engine.connect() as connection:
+        result = connection.execute(query)
+        rows = result.fetchall()
+
+    return [
+        {
+            "recency_segment": row._mapping["recency_segment"],
+            "count": int(row._mapping["count"])
+        }
+        for row in rows
+    ]
+
+
+@router.get("/gold/rfm/frequency-segment-count")
+def get_frequency_segment_count():
+    query = text("""
+        SELECT
+            frequency_segment,
+            COUNT(*) AS count
+        FROM gold.foyer_rfm_segments
+        GROUP BY frequency_segment
+        ORDER BY count DESC
+    """)
+
+    with engine.connect() as connection:
+        result = connection.execute(query)
+        rows = result.fetchall()
+
+    return [
+        {
+            "frequency_segment": row._mapping["frequency_segment"],
+            "count": int(row._mapping["count"])
+        }
+        for row in rows
+    ]
+
+
+@router.get("/gold/rfm/monetary-segment-count")
+def get_monetary_segment_count():
+    query = text("""
+        SELECT
+            monetary_segment,
+            COUNT(*) AS count
+        FROM gold.foyer_rfm_segments
+        GROUP BY monetary_segment
+        ORDER BY count DESC
+    """)
+
+    with engine.connect() as connection:
+        result = connection.execute(query)
+        rows = result.fetchall()
+
+    return [
+        {
+            "monetary_segment": row._mapping["monetary_segment"],
+            "count": int(row._mapping["count"])
+        }
+        for row in rows
+    ]
