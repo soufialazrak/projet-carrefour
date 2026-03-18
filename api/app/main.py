@@ -1,13 +1,5 @@
 from fastapi import FastAPI
-from app.routers import (
-    clients,
-    transactions,
-    foyers,
-    transaction_items,
-    loyalty_cards,
-    analytics,
-    gold
-)
+from app.routers import gold
 
 app = FastAPI(
     title="DataMarket Carrefour API",
@@ -15,12 +7,7 @@ app = FastAPI(
     version="1.0.0"
 )
 
-app.include_router(clients.router, tags=["Clients"])
-app.include_router(transactions.router, tags=["Transactions"])
-app.include_router(foyers.router, tags=["Foyers"])
-app.include_router(transaction_items.router, tags=["Transaction Items"])
-app.include_router(loyalty_cards.router, tags=["Loyalty Cards"])
-app.include_router(analytics.router, tags=["Analytics"])
+# On garde uniquement les endpoints utiles à l'app Streamlit
 app.include_router(gold.router, tags=["Gold"])
 
 

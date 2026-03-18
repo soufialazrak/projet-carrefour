@@ -49,6 +49,7 @@ st.markdown("""
 .info-text {
     font-size: 17px;
     margin-bottom: 12px;
+    text-align: center;
 }
 
 .helper-text {
@@ -57,13 +58,6 @@ st.markdown("""
     color: #666;
     font-style: italic;
     margin-bottom: 12px;
-}
-
-.vertical-divider {
-    border-left: 2px solid #e5e5e5;
-    height: 980px;
-    margin-left: auto;
-    margin-right: auto;
 }
 
 </style>
@@ -105,15 +99,13 @@ try:
         unsafe_allow_html=True
     )
 
-    left_col, divider_col, right_col = st.columns([1.3, 0.05, 1])
+    # =========================
+    # LIGNE DU HAUT : 3 GRAPHES
+    # =========================
+    col1, col2, col3 = st.columns(3)
 
-    with divider_col:
-        st.markdown('<div class="vertical-divider"></div>', unsafe_allow_html=True)
-
-    with left_col:
-        # =========================
-        # RECENCE
-        # =========================
+    # -------- RECENCE --------
+    with col1:
         st.markdown(
             '<div class="section-title">Analyse des foyers selon la récence</div>',
             unsafe_allow_html=True
@@ -143,7 +135,7 @@ try:
                         alt.Tooltip("count:Q", title="Nombre de foyers")
                     ]
                 )
-                .properties(height=250)
+                .properties(height=300)
             )
 
             labels = (
@@ -166,11 +158,8 @@ try:
         else:
             st.info("Aucune donnée disponible.")
 
-        st.divider()
-
-        # =========================
-        # FREQUENCE
-        # =========================
+    # -------- FREQUENCE --------
+    with col2:
         st.markdown(
             '<div class="section-title">Analyse des foyers selon la fréquence</div>',
             unsafe_allow_html=True
@@ -200,7 +189,7 @@ try:
                         alt.Tooltip("count:Q", title="Nombre de foyers")
                     ]
                 )
-                .properties(height=250)
+                .properties(height=300)
             )
 
             labels = (
@@ -223,11 +212,8 @@ try:
         else:
             st.info("Aucune donnée disponible.")
 
-        st.divider()
-
-        # =========================
-        # MONTANT
-        # =========================
+    # -------- MONTANT --------
+    with col3:
         st.markdown(
             '<div class="section-title">Analyse des foyers selon le montant</div>',
             unsafe_allow_html=True
@@ -262,7 +248,7 @@ try:
                         alt.Tooltip("count:Q", title="Nombre de foyers")
                     ]
                 )
-                .properties(height=250)
+                .properties(height=300)
             )
 
             labels = (
@@ -285,25 +271,40 @@ try:
         else:
             st.info("Aucune donnée disponible.")
 
-    with right_col:
-        st.markdown(
-            '<div class="section-title">Répartition finale des segments RFM</div>',
-            unsafe_allow_html=True
-        )
-        st.markdown(
-            '<div class="helper-text">Cette synthèse reflète la combinaison des segmentations de récence, fréquence et montant.</div>',
-            unsafe_allow_html=True
-        )
+    st.divider()
 
-        if not df_macro.empty:
-            macro_order = ["Or", "Argent", "Bronze", "A analyser"]
-            df_macro["macro_segment"] = pd.Categorical(
-                df_macro["macro_segment"],
-                categories=macro_order,
-                ordered=True
-            )
-            df_macro = df_macro.sort_values("macro_segment")
+    # =========================
+    # EN BAS : CAMEMBERT + EXPLICATION
+    # =========================
+    st.markdown(
+        '<div class="section-title">Répartition finale des segments RFM</div>',
+        unsafe_allow_html=True
+    )
+    st.markdown(
+        '<div class="helper-text">Cette synthèse est le résultat combiné des segmentations de récence, fréquence et montant présentées ci-dessus.</div>',
+        unsafe_allow_html=True
+    )
 
+    if not df_macro.empty:
+        macro_order = [
+            "Or",
+            "Argent",
+            "Bronze",
+            "fideles faible panier",
+            "gros panier occasionnel",
+            "A analyser"
+        ]
+
+        df_macro["macro_segment"] = pd.Categorical(
+            df_macro["macro_segment"],
+            categories=macro_order,
+            ordered=True
+        )
+        df_macro = df_macro.sort_values("macro_segment")
+
+        pie_col1, pie_col2 = st.columns([1.1, 1])
+
+        with pie_col1:
             pie = (
                 alt.Chart(df_macro)
                 .mark_arc(innerRadius=80)
@@ -312,8 +313,22 @@ try:
                     color=alt.Color(
                         "macro_segment:N",
                         scale=alt.Scale(
-                            domain=["Or", "Argent", "Bronze", "A analyser"],
-                            range=["#d4af37", "#c0c0c0", "#cd7f32", "#6c757d"]
+                            domain=[
+                                "Or",
+                                "Argent",
+                                "Bronze",
+                                "fideles faible panier",
+                                "gros panier occasionnel",
+                                "A analyser"
+                            ],
+                            range=[
+                                "#d4af37",
+                                "#c0c0c0",
+                                "#cd7f32",
+                                "#4e79a7",
+                                "#e15759",
+                                "#6c757d"
+                            ]
                         ),
                         legend=alt.Legend(title="Segment")
                     ),
@@ -322,7 +337,7 @@ try:
                         alt.Tooltip("count:Q", title="Nombre de foyers")
                     ]
                 )
-                .properties(height=420)
+                .properties(height=430)
             )
 
             label_text = (
@@ -336,8 +351,37 @@ try:
 
             macro_chart = (pie + label_text).configure_view(strokeWidth=0)
             st.altair_chart(macro_chart, use_container_width=True)
-        else:
-            st.info("Aucune donnée disponible.")
+
+        with pie_col2:
+            with st.expander("Comprendre la segmentation RFM", expanded=True):
+                st.markdown("""
+**Or**  
+Clients fréquents + gros panier  
+→ très bons clients  
+
+**Argent**  
+Clients réguliers avec bon panier  
+→ bons clients à fidéliser  
+
+**Bronze**  
+Clients simples, panier modéré  
+→ base de clientèle  
+
+**fideles faible panier**  
+Clients qui reviennent souvent mais dépensent peu  
+→ intéressants pour des offres de montée en gamme  
+
+**gros panier occasionnel**  
+Clients qui achètent rarement mais dépensent beaucoup  
+→ intéressants pour des campagnes de réactivation  
+
+**A analyser**  
+Profils atypiques ou intermédiaires ne correspondant pas aux règles principales  
+→ nécessitent une analyse complémentaire
+                """)
+
+    else:
+        st.info("Aucune donnée disponible.")
 
 except requests.RequestException as e:
     st.error(f"Erreur de connexion à l’API : {e}")

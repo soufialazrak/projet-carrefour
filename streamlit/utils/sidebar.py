@@ -44,23 +44,15 @@ def apply_global_styles():
         border: 1px solid #e6e6e6;
     }
 
-    /* Sidebar */
     section[data-testid="stSidebar"] {
         background-color: #f7f7f7;
         border-right: 1px solid #e6e6e6;
     }
 
-    /* Cache complètement le menu automatique Streamlit */
     section[data-testid="stSidebarNav"] {
         display: none !important;
     }
 
-    /* Cache aussi le header parasite éventuel */
-    section[data-testid="stSidebar"] div[data-testid="stSidebarNav"] {
-        display: none !important;
-    }
-
-    /* Boutons */
     div.stButton > button {
         width: 100%;
         text-align: left;
@@ -130,20 +122,8 @@ def sidebar(active_page: str):
             if st.button("Segmentation RFM"):
                 st.switch_page("pages/2_Segmentation.py")
 
-        if active_page == "Panier":
-            st.markdown('<div class="active-link">Segmentation panier</div>', unsafe_allow_html=True)
-        else:
-            if st.button("Segmentation panier"):
-                st.switch_page("pages/3_Segmentation_panier.py")
-
-        if active_page == "Foyer":
-            st.markdown('<div class="active-link">Segmentation foyer</div>', unsafe_allow_html=True)
-        else:
-            if st.button("Segmentation foyer"):
-                st.switch_page("pages/4_Segmentation_foyer.py")
-
         if active_page == "Recherche":
             st.markdown('<div class="active-link">Recherche</div>', unsafe_allow_html=True)
         else:
             if st.button("Recherche"):
-                st.switch_page("pages/5_Recherche.py")
+                st.switch_page("pages/3_Recherche.py")

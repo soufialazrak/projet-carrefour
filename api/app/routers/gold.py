@@ -1,294 +1,13 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException
 from sqlalchemy import text
 from app.db import engine
 
 router = APIRouter()
 
 
-@router.get("/gold/transaction-amount")
-def get_transaction_amount(
-    limit: int = Query(default=20, ge=1, le=100),
-    offset: int = Query(default=0, ge=0)
-):
-    query = text("""
-        SELECT
-            transaction_id,
-            customer_id,
-            foyer_id,
-            transaction_timestamp,
-            transaction_amount
-        FROM gold.transaction_amount
-        ORDER BY transaction_timestamp DESC
-        LIMIT :limit OFFSET :offset
-    """)
-
-    count_query = text("""
-        SELECT COUNT(*) AS total
-        FROM gold.transaction_amount
-    """)
-
-    with engine.connect() as connection:
-        result = connection.execute(query, {"limit": limit, "offset": offset})
-        data = [dict(row._mapping) for row in result]
-
-        total = connection.execute(count_query).scalar()
-
-    return {
-        "total": total,
-        "limit": limit,
-        "offset": offset,
-        "data": data
-    }
-
-
-@router.get("/gold/transaction-amount/{transaction_id}")
-def get_transaction_amount_by_id(transaction_id: str):
-    query = text("""
-        SELECT
-            transaction_id,
-            customer_id,
-            foyer_id,
-            transaction_timestamp,
-            transaction_amount
-        FROM gold.transaction_amount
-        WHERE transaction_id = :transaction_id
-    """)
-
-    with engine.connect() as connection:
-        result = connection.execute(query, {"transaction_id": transaction_id})
-        row = result.fetchone()
-
-    if row is None:
-        raise HTTPException(status_code=404, detail="Transaction gold introuvable")
-
-    return dict(row._mapping)
-
-
-@router.get("/gold/foyer-rfm-metrics")
-def get_foyer_rfm_metrics(
-    limit: int = Query(default=20, ge=1, le=100),
-    offset: int = Query(default=0, ge=0)
-):
-    query = text("""
-        SELECT
-            foyer_id,
-            last_purchase_date,
-            recency_days,
-            frequency,
-            monetary
-        FROM gold.foyer_rfm_metrics
-        ORDER BY monetary DESC
-        LIMIT :limit OFFSET :offset
-    """)
-
-    count_query = text("""
-        SELECT COUNT(*) AS total
-        FROM gold.foyer_rfm_metrics
-    """)
-
-    with engine.connect() as connection:
-        result = connection.execute(query, {"limit": limit, "offset": offset})
-        data = [dict(row._mapping) for row in result]
-
-        total = connection.execute(count_query).scalar()
-
-    return {
-        "total": total,
-        "limit": limit,
-        "offset": offset,
-        "data": data
-    }
-
-
-@router.get("/gold/foyer-rfm-metrics/{foyer_id}")
-def get_foyer_rfm_metrics_by_foyer_id(foyer_id: str):
-    query = text("""
-        SELECT
-            foyer_id,
-            last_purchase_date,
-            recency_days,
-            frequency,
-            monetary
-        FROM gold.foyer_rfm_metrics
-        WHERE foyer_id = :foyer_id
-    """)
-
-    with engine.connect() as connection:
-        result = connection.execute(query, {"foyer_id": foyer_id})
-        row = result.fetchone()
-
-    if row is None:
-        raise HTTPException(status_code=404, detail="RFM metrics introuvables pour ce foyer")
-
-    return dict(row._mapping)
-
-
-@router.get("/gold/foyer-rfm-segments")
-def get_foyer_rfm_segments(
-    limit: int = Query(default=20, ge=1, le=100),
-    offset: int = Query(default=0, ge=0),
-    macro_segment: str | None = Query(default=None)
-):
-    if macro_segment:
-        query = text("""
-            SELECT
-                foyer_id,
-                last_purchase_date,
-                recency_days,
-                frequency,
-                monetary,
-                recency_segment,
-                frequency_segment,
-                monetary_segment,
-                macro_segment
-            FROM gold.foyer_rfm_segments
-            WHERE macro_segment = :macro_segment
-            ORDER BY monetary DESC
-            LIMIT :limit OFFSET :offset
-        """)
-
-        count_query = text("""
-            SELECT COUNT(*) AS total
-            FROM gold.foyer_rfm_segments
-            WHERE macro_segment = :macro_segment
-        """)
-
-        params = {
-            "macro_segment": macro_segment,
-            "limit": limit,
-            "offset": offset
-        }
-
-        count_params = {
-            "macro_segment": macro_segment
-        }
-    else:
-        query = text("""
-            SELECT
-                foyer_id,
-                last_purchase_date,
-                recency_days,
-                frequency,
-                monetary,
-                recency_segment,
-                frequency_segment,
-                monetary_segment,
-                macro_segment
-            FROM gold.foyer_rfm_segments
-            ORDER BY monetary DESC
-            LIMIT :limit OFFSET :offset
-        """)
-
-        count_query = text("""
-            SELECT COUNT(*) AS total
-            FROM gold.foyer_rfm_segments
-        """)
-
-        params = {
-            "limit": limit,
-            "offset": offset
-        }
-
-        count_params = {}
-
-    with engine.connect() as connection:
-        result = connection.execute(query, params)
-        data = [dict(row._mapping) for row in result]
-
-        total = connection.execute(count_query, count_params).scalar()
-
-    return {
-        "total": total,
-        "limit": limit,
-        "offset": offset,
-        "macro_segment": macro_segment,
-        "data": data
-    }
-
-
-@router.get("/gold/foyer-rfm-segments/{foyer_id}")
-def get_foyer_rfm_segments_by_foyer_id(foyer_id: str):
-    query = text("""
-        SELECT
-            foyer_id,
-            last_purchase_date,
-            recency_days,
-            frequency,
-            monetary,
-            recency_segment,
-            frequency_segment,
-            monetary_segment,
-            macro_segment
-        FROM gold.foyer_rfm_segments
-        WHERE foyer_id = :foyer_id
-    """)
-
-    with engine.connect() as connection:
-        result = connection.execute(query, {"foyer_id": foyer_id})
-        row = result.fetchone()
-
-    if row is None:
-        raise HTTPException(status_code=404, detail="Segmentation RFM introuvable pour ce foyer")
-
-    return dict(row._mapping)
-
-
-@router.get("/gold/customer-value")
-def get_customer_value(
-    limit: int = Query(default=20, ge=1, le=100),
-    offset: int = Query(default=0, ge=0)
-):
-    query = text("""
-        SELECT
-            customer_id,
-            nb_transactions,
-            total_spent,
-            avg_item_price
-        FROM gold.customer_value
-        ORDER BY total_spent DESC NULLS LAST
-        LIMIT :limit OFFSET :offset
-    """)
-
-    count_query = text("""
-        SELECT COUNT(*) AS total
-        FROM gold.customer_value
-    """)
-
-    with engine.connect() as connection:
-        result = connection.execute(query, {"limit": limit, "offset": offset})
-        data = [dict(row._mapping) for row in result]
-
-        total = connection.execute(count_query).scalar()
-
-    return {
-        "total": total,
-        "limit": limit,
-        "offset": offset,
-        "data": data
-    }
-
-
-@router.get("/gold/customer-value/{customer_id}")
-def get_customer_value_by_customer_id(customer_id: str):
-    query = text("""
-        SELECT
-            customer_id,
-            nb_transactions,
-            total_spent,
-            avg_item_price
-        FROM gold.customer_value
-        WHERE customer_id = :customer_id
-    """)
-
-    with engine.connect() as connection:
-        result = connection.execute(query, {"customer_id": customer_id})
-        row = result.fetchone()
-
-    if row is None:
-        raise HTTPException(status_code=404, detail="Customer value introuvable pour ce client")
-
-    return dict(row._mapping)
-
+# =========================
+# PAGE ACCUEIL
+# =========================
 
 @router.get("/gold/kpis")
 def get_kpis():
@@ -349,9 +68,13 @@ def revenue_over_time():
     ]
 
 
-@router.get("/gold/rfm/macro-segment-count")
-def get_macro_segment_count():
-    query = text("""
+# =========================
+# PAGE SEGMENTATION RFM
+# =========================
+
+@router.get("/gold/rfm/distributions")
+def get_rfm_distributions():
+    macro_query = text("""
         SELECT
             macro_segment,
             COUNT(*) AS count
@@ -360,22 +83,7 @@ def get_macro_segment_count():
         ORDER BY count DESC
     """)
 
-    with engine.connect() as connection:
-        result = connection.execute(query)
-        rows = result.fetchall()
-
-    return [
-        {
-            "macro_segment": row._mapping["macro_segment"],
-            "count": int(row._mapping["count"])
-        }
-        for row in rows
-    ]
-
-
-@router.get("/gold/rfm/recency-segment-count")
-def get_recency_segment_count():
-    query = text("""
+    recency_query = text("""
         SELECT
             recency_segment,
             COUNT(*) AS count
@@ -384,22 +92,7 @@ def get_recency_segment_count():
         ORDER BY count DESC
     """)
 
-    with engine.connect() as connection:
-        result = connection.execute(query)
-        rows = result.fetchall()
-
-    return [
-        {
-            "recency_segment": row._mapping["recency_segment"],
-            "count": int(row._mapping["count"])
-        }
-        for row in rows
-    ]
-
-
-@router.get("/gold/rfm/frequency-segment-count")
-def get_frequency_segment_count():
-    query = text("""
+    frequency_query = text("""
         SELECT
             frequency_segment,
             COUNT(*) AS count
@@ -408,22 +101,7 @@ def get_frequency_segment_count():
         ORDER BY count DESC
     """)
 
-    with engine.connect() as connection:
-        result = connection.execute(query)
-        rows = result.fetchall()
-
-    return [
-        {
-            "frequency_segment": row._mapping["frequency_segment"],
-            "count": int(row._mapping["count"])
-        }
-        for row in rows
-    ]
-
-
-@router.get("/gold/rfm/monetary-segment-count")
-def get_monetary_segment_count():
-    query = text("""
+    monetary_query = text("""
         SELECT
             monetary_segment,
             COUNT(*) AS count
@@ -433,13 +111,261 @@ def get_monetary_segment_count():
     """)
 
     with engine.connect() as connection:
-        result = connection.execute(query)
-        rows = result.fetchall()
+        macro_rows = connection.execute(macro_query).fetchall()
+        recency_rows = connection.execute(recency_query).fetchall()
+        frequency_rows = connection.execute(frequency_query).fetchall()
+        monetary_rows = connection.execute(monetary_query).fetchall()
 
-    return [
+    macro_segments = [
+        {
+            "macro_segment": row._mapping["macro_segment"],
+            "count": int(row._mapping["count"])
+        }
+        for row in macro_rows
+    ]
+
+    recency_segments = [
+        {
+            "recency_segment": row._mapping["recency_segment"],
+            "count": int(row._mapping["count"])
+        }
+        for row in recency_rows
+    ]
+
+    frequency_segments = [
+        {
+            "frequency_segment": row._mapping["frequency_segment"],
+            "count": int(row._mapping["count"])
+        }
+        for row in frequency_rows
+    ]
+
+    monetary_segments = [
         {
             "monetary_segment": row._mapping["monetary_segment"],
             "count": int(row._mapping["count"])
         }
-        for row in rows
+        for row in monetary_rows
     ]
+
+    total_foyers = sum(item["count"] for item in macro_segments)
+
+    return {
+        "total_foyers": total_foyers,
+        "macro_segments": macro_segments,
+        "recency_segments": recency_segments,
+        "frequency_segments": frequency_segments,
+        "monetary_segments": monetary_segments
+    }
+
+
+# =========================
+# PAGE RECHERCHE - ANGLE CLIENT
+# =========================
+
+@router.get("/search/customer/{customer_id}")
+def search_customer(customer_id: str):
+    client_query = text("""
+        SELECT
+            customer_id,
+            foyer_id,
+            customer_city,
+            customer_state
+        FROM datamarket.customers
+        WHERE customer_id = :customer_id
+    """)
+
+    with engine.connect() as connection:
+        client_row = connection.execute(
+            client_query, {"customer_id": customer_id}
+        ).fetchone()
+
+        if client_row is None:
+            raise HTTPException(status_code=404, detail="Client introuvable")
+
+        client = dict(client_row._mapping)
+        foyer_id = client["foyer_id"]
+
+        foyer_query = text("""
+            SELECT
+                foyer_id,
+                foyer_created_at,
+                foyer_status
+            FROM datamarket.foyers
+            WHERE foyer_id = :foyer_id
+        """)
+
+        foyer_row = connection.execute(
+            foyer_query, {"foyer_id": foyer_id}
+        ).fetchone()
+
+        foyer = dict(foyer_row._mapping) if foyer_row else None
+
+        segmentation_query = text("""
+            SELECT
+                foyer_id,
+                last_purchase_date,
+                recency_days,
+                frequency,
+                monetary,
+                recency_segment,
+                frequency_segment,
+                monetary_segment,
+                macro_segment
+            FROM gold.foyer_rfm_segments
+            WHERE foyer_id = :foyer_id
+        """)
+
+        segmentation_row = connection.execute(
+            segmentation_query, {"foyer_id": foyer_id}
+        ).fetchone()
+
+        foyer_segmentation = (
+            dict(segmentation_row._mapping) if segmentation_row else None
+        )
+
+        other_clients_query = text("""
+            SELECT
+                customer_id,
+                customer_city,
+                customer_state
+            FROM datamarket.customers
+            WHERE foyer_id = :foyer_id
+            ORDER BY customer_id
+        """)
+
+        other_clients_rows = connection.execute(
+            other_clients_query, {"foyer_id": foyer_id}
+        ).fetchall()
+
+        autres_clients_du_foyer = [
+            dict(row._mapping) for row in other_clients_rows
+        ]
+
+        transactions_query = text("""
+            SELECT
+                transaction_id,
+                transaction_timestamp,
+                transaction_amount
+            FROM gold.transaction_amount
+            WHERE customer_id = :customer_id
+            ORDER BY transaction_timestamp DESC
+        """)
+
+        transactions_rows = connection.execute(
+            transactions_query, {"customer_id": customer_id}
+        ).fetchall()
+
+        transactions_du_client = [
+            {
+                "transaction_id": row._mapping["transaction_id"],
+                "transaction_timestamp": row._mapping["transaction_timestamp"],
+                "transaction_amount": float(row._mapping["transaction_amount"])
+            }
+            for row in transactions_rows
+        ]
+
+    return {
+        "client": client,
+        "foyer": foyer,
+        "foyer_segmentation": foyer_segmentation,
+        "autres_clients_du_foyer": autres_clients_du_foyer,
+        "transactions_du_client": transactions_du_client
+    }
+
+
+# =========================
+# PAGE RECHERCHE - ANGLE FOYER
+# =========================
+
+@router.get("/search/foyer/{foyer_id}")
+def search_foyer(foyer_id: str):
+    foyer_query = text("""
+        SELECT
+            foyer_id,
+            foyer_created_at,
+            foyer_status
+        FROM datamarket.foyers
+        WHERE foyer_id = :foyer_id
+    """)
+
+    with engine.connect() as connection:
+        foyer_row = connection.execute(
+            foyer_query, {"foyer_id": foyer_id}
+        ).fetchone()
+
+        if foyer_row is None:
+            raise HTTPException(status_code=404, detail="Foyer introuvable")
+
+        foyer = dict(foyer_row._mapping)
+
+        segmentation_query = text("""
+            SELECT
+                foyer_id,
+                last_purchase_date,
+                recency_days,
+                frequency,
+                monetary,
+                recency_segment,
+                frequency_segment,
+                monetary_segment,
+                macro_segment
+            FROM gold.foyer_rfm_segments
+            WHERE foyer_id = :foyer_id
+        """)
+
+        segmentation_row = connection.execute(
+            segmentation_query, {"foyer_id": foyer_id}
+        ).fetchone()
+
+        foyer_segmentation = (
+            dict(segmentation_row._mapping) if segmentation_row else None
+        )
+
+        clients_query = text("""
+            SELECT
+                customer_id,
+                customer_city,
+                customer_state
+            FROM datamarket.customers
+            WHERE foyer_id = :foyer_id
+            ORDER BY customer_id
+        """)
+
+        clients_rows = connection.execute(
+            clients_query, {"foyer_id": foyer_id}
+        ).fetchall()
+
+        clients_du_foyer = [dict(row._mapping) for row in clients_rows]
+
+        transactions_query = text("""
+            SELECT
+                ta.transaction_id,
+                ta.customer_id,
+                ta.transaction_timestamp,
+                ta.transaction_amount
+            FROM gold.transaction_amount ta
+            WHERE ta.foyer_id = :foyer_id
+            ORDER BY ta.transaction_timestamp DESC
+        """)
+
+        transactions_rows = connection.execute(
+            transactions_query, {"foyer_id": foyer_id}
+        ).fetchall()
+
+        transactions_du_foyer = [
+            {
+                "transaction_id": row._mapping["transaction_id"],
+                "customer_id": row._mapping["customer_id"],
+                "transaction_timestamp": row._mapping["transaction_timestamp"],
+                "transaction_amount": float(row._mapping["transaction_amount"])
+            }
+            for row in transactions_rows
+        ]
+
+    return {
+        "foyer": foyer,
+        "foyer_segmentation": foyer_segmentation,
+        "clients_du_foyer": clients_du_foyer,
+        "transactions_du_foyer": transactions_du_foyer
+    }
