@@ -273,6 +273,32 @@ def search_customer(customer_id: str):
         "transactions_du_client": transactions_du_client
     }
 
+@router.get("/search/customers")
+def list_customers(limit: int = 50):
+    query = text("""
+        SELECT
+            customer_id,
+            foyer_id,
+            customer_city,
+            customer_state
+        FROM datamarket.customers
+        ORDER BY customer_id
+        LIMIT :limit
+    """)
+
+    with engine.connect() as connection:
+        rows = connection.execute(query, {"limit": limit}).fetchall()
+
+    return [
+        {
+            "customer_id": row._mapping["customer_id"],
+            "foyer_id": row._mapping["foyer_id"],
+            "customer_city": row._mapping["customer_city"],
+            "customer_state": row._mapping["customer_state"]
+        }
+        for row in rows
+    ]
+
 
 # =========================
 # PAGE RECHERCHE - ANGLE FOYER
@@ -369,3 +395,29 @@ def search_foyer(foyer_id: str):
         "clients_du_foyer": clients_du_foyer,
         "transactions_du_foyer": transactions_du_foyer
     }
+
+
+
+@router.get("/search/foyers")
+def list_foyers(limit: int = 50):
+    query = text("""
+        SELECT
+            f.foyer_id,
+            f.foyer_created_at,
+            f.foyer_status
+        FROM datamarket.foyers f
+        ORDER BY f.foyer_id
+        LIMIT :limit
+    """)
+
+    with engine.connect() as connection:
+        rows = connection.execute(query, {"limit": limit}).fetchall()
+
+    return [
+        {
+            "foyer_id": row._mapping["foyer_id"],
+            "foyer_created_at": row._mapping["foyer_created_at"],
+            "foyer_status": row._mapping["foyer_status"]
+        }
+        for row in rows
+    ]

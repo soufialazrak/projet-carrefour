@@ -17,25 +17,44 @@ def main():
 
     tx = pd.read_csv(IN_TRANSACTIONS)
 
-    required_cols = {"customer_id", "foyer_id", "customer_city", "customer_state"}
+    required_cols = {
+        "customer_id",
+        "household_id",
+        "first_name",
+        "last_name",
+        "birth_year",
+        "email",
+        "customer_city",
+        "postal_code",
+        "region",
+    }
     missing = required_cols - set(tx.columns)
     if missing:
         raise ValueError(f"Missing columns in transactions_enriched: {missing}")
 
     customers = (
-        tx[["customer_id", "foyer_id", "customer_city", "customer_state"]]
+        tx[[
+            "customer_id",
+            "household_id",
+            "first_name",
+            "last_name",
+            "birth_year",
+            "email",
+            "customer_city",
+            "postal_code",
+            "region",
+        ]]
         .drop_duplicates(subset=["customer_id"])
         .copy()
     )
 
-    # contrôles
     if customers["customer_id"].isna().any():
         raise ValueError("Null customer_id found")
     if customers["customer_id"].duplicated().any():
         raise ValueError("Duplicate customer_id found")
-    if customers["foyer_id"].isna().any():
-        raise ValueError("Null foyer_id found in customers")
-    
+    if customers["household_id"].isna().any():
+        raise ValueError("Null household_id found in customers")
+
     customers.to_csv(OUT_FILE, index=False)
     print(f"[OK] Exported {len(customers):,} rows -> {OUT_FILE}")
 

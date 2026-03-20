@@ -17,28 +17,23 @@ def main():
 
     tx = pd.read_csv(IN_TRANSACTIONS)
 
-    required_cols = {"card_id", "customer_id", "card_status", "issued_at"}
+    required_cols = {"card_id", "customer_id", "card_status", "issued_at", "last_used_at"}
     missing = required_cols - set(tx.columns)
     if missing:
         raise ValueError(f"Missing columns in transactions_enriched: {missing}")
 
     cards = (
-        tx[["card_id", "customer_id", "card_status", "issued_at"]]
+        tx[["card_id", "customer_id", "card_status", "issued_at", "last_used_at"]]
         .drop_duplicates(subset=["card_id"])
         .copy()
     )
 
-    # contrôles
     if cards["card_id"].isna().any():
         raise ValueError("Null card_id found")
     if cards["card_id"].duplicated().any():
         raise ValueError("Duplicate card_id found")
     if cards["customer_id"].isna().any():
         raise ValueError("Null customer_id found in loyalty_cards")
-
-    # Optionnel (à activer si tu veux imposer 1 carte max par client)
-    # if cards["customer_id"].duplicated().any():
-    #     raise ValueError("A customer has multiple cards (violates 1:1 assumption)")
 
     cards.to_csv(OUT_FILE, index=False)
     print(f"[OK] Exported {len(cards):,} rows -> {OUT_FILE}")

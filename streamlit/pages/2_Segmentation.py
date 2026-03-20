@@ -79,20 +79,22 @@ st.markdown(
 st.divider()
 
 
-def fetch_dataframe(endpoint: str) -> pd.DataFrame:
-    url = f"{API_BASE_URL}{endpoint}"
+def fetch_rfm_distributions() -> dict:
+    url = f"{API_BASE_URL}/gold/rfm/distributions"
     response = requests.get(url, timeout=60)
     response.raise_for_status()
-    return pd.DataFrame(response.json())
+    return response.json()
 
 
 try:
-    df_macro = fetch_dataframe("/gold/rfm/macro-segment-count")
-    df_recency = fetch_dataframe("/gold/rfm/recency-segment-count")
-    df_frequency = fetch_dataframe("/gold/rfm/frequency-segment-count")
-    df_monetary = fetch_dataframe("/gold/rfm/monetary-segment-count")
+    payload = fetch_rfm_distributions()
 
-    total_foyers = int(df_macro["count"].sum()) if not df_macro.empty else 0
+    total_foyers = payload.get("total_foyers", 0)
+
+    df_macro = pd.DataFrame(payload.get("macro_segments", []))
+    df_recency = pd.DataFrame(payload.get("recency_segments", []))
+    df_frequency = pd.DataFrame(payload.get("frequency_segments", []))
+    df_monetary = pd.DataFrame(payload.get("monetary_segments", []))
 
     st.markdown(
         f"<p class='info-text'>Nombre total de foyers segmentés : <b>{total_foyers}</b></p>",
@@ -122,11 +124,7 @@ try:
 
             bars = (
                 alt.Chart(df_recency)
-                .mark_bar(
-                    color="#d62828",
-                    cornerRadiusTopLeft=5,
-                    cornerRadiusTopRight=5
-                )
+                .mark_bar(color="#d62828", cornerRadiusTopLeft=5, cornerRadiusTopRight=5)
                 .encode(
                     x=alt.X("recency_segment:N", title="Segment"),
                     y=alt.Y("count:Q", title="Nombre de foyers"),
@@ -140,12 +138,7 @@ try:
 
             labels = (
                 alt.Chart(df_recency)
-                .mark_text(
-                    align="center",
-                    baseline="bottom",
-                    dy=-5,
-                    color="black"
-                )
+                .mark_text(align="center", baseline="bottom", dy=-5, color="black")
                 .encode(
                     x="recency_segment:N",
                     y="count:Q",
@@ -153,8 +146,7 @@ try:
                 )
             )
 
-            recency_chart = (bars + labels).configure_view(strokeWidth=0)
-            st.altair_chart(recency_chart, use_container_width=True)
+            st.altair_chart((bars + labels).configure_view(strokeWidth=0), use_container_width=True)
         else:
             st.info("Aucune donnée disponible.")
 
@@ -176,11 +168,7 @@ try:
 
             bars = (
                 alt.Chart(df_frequency)
-                .mark_bar(
-                    color="#004f9f",
-                    cornerRadiusTopLeft=5,
-                    cornerRadiusTopRight=5
-                )
+                .mark_bar(color="#004f9f", cornerRadiusTopLeft=5, cornerRadiusTopRight=5)
                 .encode(
                     x=alt.X("frequency_segment:N", title="Segment"),
                     y=alt.Y("count:Q", title="Nombre de foyers"),
@@ -194,12 +182,7 @@ try:
 
             labels = (
                 alt.Chart(df_frequency)
-                .mark_text(
-                    align="center",
-                    baseline="bottom",
-                    dy=-5,
-                    color="black"
-                )
+                .mark_text(align="center", baseline="bottom", dy=-5, color="black")
                 .encode(
                     x="frequency_segment:N",
                     y="count:Q",
@@ -207,8 +190,7 @@ try:
                 )
             )
 
-            frequency_chart = (bars + labels).configure_view(strokeWidth=0)
-            st.altair_chart(frequency_chart, use_container_width=True)
+            st.altair_chart((bars + labels).configure_view(strokeWidth=0), use_container_width=True)
         else:
             st.info("Aucune donnée disponible.")
 
@@ -235,11 +217,7 @@ try:
 
             bars = (
                 alt.Chart(df_monetary)
-                .mark_bar(
-                    color="#2a9d8f",
-                    cornerRadiusTopLeft=5,
-                    cornerRadiusTopRight=5
-                )
+                .mark_bar(color="#2a9d8f", cornerRadiusTopLeft=5, cornerRadiusTopRight=5)
                 .encode(
                     x=alt.X("monetary_segment:N", title="Segment"),
                     y=alt.Y("count:Q", title="Nombre de foyers"),
@@ -253,12 +231,7 @@ try:
 
             labels = (
                 alt.Chart(df_monetary)
-                .mark_text(
-                    align="center",
-                    baseline="bottom",
-                    dy=-5,
-                    color="black"
-                )
+                .mark_text(align="center", baseline="bottom", dy=-5, color="black")
                 .encode(
                     x="monetary_segment:N",
                     y="count:Q",
@@ -266,8 +239,7 @@ try:
                 )
             )
 
-            monetary_chart = (bars + labels).configure_view(strokeWidth=0)
-            st.altair_chart(monetary_chart, use_container_width=True)
+            st.altair_chart((bars + labels).configure_view(strokeWidth=0), use_container_width=True)
         else:
             st.info("Aucune donnée disponible.")
 
@@ -349,8 +321,7 @@ try:
                 )
             )
 
-            macro_chart = (pie + label_text).configure_view(strokeWidth=0)
-            st.altair_chart(macro_chart, use_container_width=True)
+            st.altair_chart((pie + label_text).configure_view(strokeWidth=0), use_container_width=True)
 
         with pie_col2:
             with st.expander("Comprendre la segmentation RFM", expanded=True):
@@ -379,7 +350,6 @@ Clients qui achètent rarement mais dépensent beaucoup
 Profils atypiques ou intermédiaires ne correspondant pas aux règles principales  
 → nécessitent une analyse complémentaire
                 """)
-
     else:
         st.info("Aucune donnée disponible.")
 

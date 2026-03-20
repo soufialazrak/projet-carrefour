@@ -49,7 +49,16 @@ def apply_global_styles():
         border-right: 1px solid #e6e6e6;
     }
 
-    section[data-testid="stSidebarNav"] {
+    /* Masquer complètement la navigation native Streamlit */
+    [data-testid="stSidebarNav"] {
+        display: none !important;
+    }
+
+    [data-testid="stSidebarNavItems"] {
+        display: none !important;
+    }
+
+    [data-testid="stSidebarHeader"] {
         display: none !important;
     }
 

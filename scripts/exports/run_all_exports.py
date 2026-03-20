@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 
 SCRIPTS = [
-    "export_foyers.py",
+    "export_households.py",
     "export_customers.py",
     "export_loyalty_cards.py",
     "export_product_categories.py",
@@ -26,10 +26,9 @@ def main():
             print(result.stderr)
             sys.exit(result.returncode)
         else:
-            # Affiche ce que le script a imprimé
             print(result.stdout.strip())
 
-    print("\n All exports completed successfully.")
+    print("\nAll exports completed successfully.")
 
 if __name__ == "__main__":
     main()
