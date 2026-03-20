@@ -2,36 +2,47 @@ CREATE SCHEMA IF NOT EXISTS datamarket;
 SET search_path TO datamarket;
 
 -- =========================
--- FOYERS
+-- HOUSEHOLDS (ancien FOYERS)
 -- =========================
-CREATE TABLE IF NOT EXISTS foyers (
-  foyer_id          VARCHAR(64) PRIMARY KEY,
-  foyer_created_at  TIMESTAMP NOT NULL,
-  foyer_status      VARCHAR(20) NOT NULL CHECK (foyer_status IN ('active', 'inactive'))
+CREATE TABLE IF NOT EXISTS households (
+  household_id          VARCHAR(64) PRIMARY KEY,
+  household_created_at  TIMESTAMP NOT NULL
 );
 
 -- =========================
 -- CUSTOMERS
 -- =========================
 CREATE TABLE IF NOT EXISTS customers (
-  customer_id     VARCHAR(64) PRIMARY KEY,
-  foyer_id        VARCHAR(64) NOT NULL REFERENCES foyers(foyer_id),
-  customer_city   VARCHAR(255),
-  customer_state  VARCHAR(50)
+  customer_id              VARCHAR(64) PRIMARY KEY,
+  household_id             VARCHAR(64) NOT NULL REFERENCES households(household_id),
+  first_name_encrypted     TEXT,
+  last_name_encrypted      TEXT,
+  birth_year               INT,
+  email_encrypted          TEXT,
+  email_hash               VARCHAR(64),
+  customer_city            VARCHAR(255),
+  postal_code              VARCHAR(20),
+  region                   VARCHAR(100)
 );
 
-CREATE INDEX IF NOT EXISTS idx_customers_foyer_id
-  ON customers(foyer_id);
+CREATE INDEX IF NOT EXISTS idx_customers_household_id
+  ON customers(household_id);
 
+CREATE INDEX IF NOT EXISTS idx_customers_email_hash
+  ON customers(email_hash);
 -- =========================
 -- LOYALTY CARDS
 -- =========================
 CREATE TABLE IF NOT EXISTS loyalty_cards (
-  card_id      VARCHAR(64) PRIMARY KEY,
-  customer_id  VARCHAR(64) NOT NULL UNIQUE REFERENCES customers(customer_id),
-  card_status  VARCHAR(20) NOT NULL CHECK (card_status IN ('active', 'inactive')),
-  issued_at    TIMESTAMP
+  card_id       VARCHAR(64) PRIMARY KEY,
+  customer_id   VARCHAR(64) NOT NULL REFERENCES customers(customer_id),
+  card_status   VARCHAR(20) NOT NULL CHECK (card_status IN ('active', 'expired')),
+  issued_at     TIMESTAMP,
+  last_used_at  TIMESTAMP
 );
+
+CREATE INDEX IF NOT EXISTS idx_loyalty_cards_customer_id
+  ON loyalty_cards(customer_id);
 
 -- =========================
 -- PRODUCT CATEGORIES
@@ -46,12 +57,15 @@ CREATE TABLE IF NOT EXISTS product_categories (
 -- =========================
 CREATE TABLE IF NOT EXISTS products (
   product_id         VARCHAR(64) PRIMARY KEY,
-  category_id INT NOT NULL REFERENCES product_categories(category_id),
+  category_id        INT NOT NULL REFERENCES product_categories(category_id),
   product_weight_g   NUMERIC,
   product_length_cm  NUMERIC,
   product_height_cm  NUMERIC,
   product_width_cm   NUMERIC
 );
+
+CREATE INDEX IF NOT EXISTS idx_products_category_id
+  ON products(category_id);
 
 -- =========================
 -- TRANSACTIONS
