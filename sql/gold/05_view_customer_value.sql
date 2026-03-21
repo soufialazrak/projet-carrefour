@@ -6,6 +6,7 @@
 -- nombre de transactions, montant total dépensé
 -- et prix moyen des articles achetés.
 
+
 CREATE OR REPLACE VIEW gold.customer_value AS
 SELECT
     c.customer_id,

@@ -1,0 +1,26 @@
+docker exec -it datamarket_carrefour_pg psql -U soufia -d datamarket_carrefour -f /sql/load_silver_tables.sql
+docker exec -it datamarket_carrefour_pg psql -U soufia -d datamarket_carrefour -f /sql/create_gold_all.sql
+
+***********************************
+Pour accéder à la base PostgreSQL tourne dans Docker(via Docker exec)
+
+Depuis ton terminal dans ton projet :
+
+docker exec -it datamarket_carrefour_pg psql -U soufia -d datamarket_carrefour
+
+*************************************
+Pour voir les schémas de la base:
+
+\dn
+
+***************************************
+Pour voir les tables du projet:
+
+\dt datamarket.*
+
+******************************************
+Pour voir les vues analytiques (Gold) :
+
+\dv gold.*
+
+**********************************************

@@ -130,7 +130,7 @@ def main():
     ]]
 
     # 8. Export CSV
-    customers.to_csv(OUT_FILE, index=False)
+    customers.to_csv(OUT_FILE, index=False, encoding="utf-8")
     print(f"[OK] Exported {len(customers):,} rows -> {OUT_FILE}")
 
 

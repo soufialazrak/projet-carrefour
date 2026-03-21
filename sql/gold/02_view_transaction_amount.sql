@@ -7,7 +7,7 @@ CREATE OR REPLACE VIEW gold.transaction_amount AS
 SELECT
     t.transaction_id,
     lc.customer_id,
-    c.foyer_id,
+    c.household_id,
     t.transaction_timestamp,
     SUM(ti.quantity * ti.unit_price) AS transaction_amount
 FROM datamarket.transactions t
@@ -20,5 +20,5 @@ JOIN datamarket.transaction_items ti
 GROUP BY
     t.transaction_id,
     lc.customer_id,
-    c.foyer_id,
+    c.household_id,
     t.transaction_timestamp;

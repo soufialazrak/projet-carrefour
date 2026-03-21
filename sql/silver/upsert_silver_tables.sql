@@ -15,9 +15,7 @@ CREATE TEMP TABLE staging_product_categories (
   category_name VARCHAR(255)
 );
 
-\copy staging_product_categories(category_id, category_name)
-FROM '/data/csv/product_categories.csv'
-WITH (FORMAT csv, HEADER true);
+\copy staging_product_categories(category_id, category_name) FROM '/data/csv/product_categories.csv' WITH (FORMAT csv, HEADER true);
 
 \echo 'Upserting product_categories...'
 
@@ -47,16 +45,7 @@ CREATE TEMP TABLE staging_products (
   product_width_cm   NUMERIC
 );
 
-\copy staging_products(
-  product_id,
-  category_id,
-  product_weight_g,
-  product_length_cm,
-  product_height_cm,
-  product_width_cm
-)
-FROM '/data/csv/products.csv'
-WITH (FORMAT csv, HEADER true);
+\copy staging_products(product_id, category_id, product_weight_g, product_length_cm, product_height_cm, product_width_cm) FROM '/data/csv/products.csv' WITH (FORMAT csv, HEADER true);
 
 \echo 'Upserting products...'
 
@@ -95,12 +84,7 @@ CREATE TEMP TABLE staging_households (
   household_created_at  TIMESTAMP
 );
 
-\copy staging_households(
-  household_id,
-  household_created_at
-)
-FROM '/data/csv/households.csv'
-WITH (FORMAT csv, HEADER true);
+\copy staging_households(household_id, household_created_at) FROM '/data/csv/households.csv' WITH (FORMAT csv, HEADER true);
 
 \echo 'Upserting households...'
 
@@ -122,40 +106,30 @@ SET household_created_at = EXCLUDED.household_created_at;
 
 DROP TABLE IF EXISTS staging_customers;
 CREATE TEMP TABLE staging_customers (
-  customer_id      VARCHAR(64),
-  household_id     VARCHAR(64),
-  first_name       VARCHAR(100),
-  last_name        VARCHAR(100),
-  birth_year       INT,
-  email            VARCHAR(255),
-  customer_city    VARCHAR(255),
-  postal_code      VARCHAR(20),
-  region           VARCHAR(100)
+  customer_id               VARCHAR(64),
+  household_id              VARCHAR(64),
+  first_name_encrypted      TEXT,
+  last_name_encrypted       TEXT,
+  birth_year                INT,
+  email_encrypted           TEXT,
+  email_hash                VARCHAR(64),
+  customer_city             VARCHAR(255),
+  postal_code               VARCHAR(20),
+  region                    VARCHAR(100)
 );
 
-\copy staging_customers(
-  customer_id,
-  household_id,
-  first_name,
-  last_name,
-  birth_year,
-  email,
-  customer_city,
-  postal_code,
-  region
-)
-FROM '/data/csv/customers.csv'
-WITH (FORMAT csv, HEADER true);
+\copy staging_customers(customer_id, household_id, first_name_encrypted, last_name_encrypted, birth_year, email_encrypted, email_hash, customer_city, postal_code, region) FROM '/data/csv/customers.csv' WITH (FORMAT csv, HEADER true);
 
 \echo 'Upserting customers...'
 
 INSERT INTO datamarket.customers (
   customer_id,
   household_id,
-  first_name,
-  last_name,
+  first_name_encrypted,
+  last_name_encrypted,
   birth_year,
-  email,
+  email_encrypted,
+  email_hash,
   customer_city,
   postal_code,
   region
@@ -163,10 +137,11 @@ INSERT INTO datamarket.customers (
 SELECT
   customer_id,
   household_id,
-  first_name,
-  last_name,
+  first_name_encrypted,
+  last_name_encrypted,
   birth_year,
-  email,
+  email_encrypted,
+  email_hash,
   customer_city,
   postal_code,
   region
@@ -174,10 +149,11 @@ FROM staging_customers
 ON CONFLICT (customer_id) DO UPDATE
 SET
   household_id = EXCLUDED.household_id,
-  first_name = EXCLUDED.first_name,
-  last_name = EXCLUDED.last_name,
+  first_name_encrypted = EXCLUDED.first_name_encrypted,
+  last_name_encrypted = EXCLUDED.last_name_encrypted,
   birth_year = EXCLUDED.birth_year,
-  email = EXCLUDED.email,
+  email_encrypted = EXCLUDED.email_encrypted,
+  email_hash = EXCLUDED.email_hash,
   customer_city = EXCLUDED.customer_city,
   postal_code = EXCLUDED.postal_code,
   region = EXCLUDED.region;
@@ -196,15 +172,7 @@ CREATE TEMP TABLE staging_loyalty_cards (
   last_used_at   TIMESTAMP
 );
 
-\copy staging_loyalty_cards(
-  card_id,
-  customer_id,
-  card_status,
-  issued_at,
-  last_used_at
-)
-FROM '/data/csv/loyalty_cards.csv'
-WITH (FORMAT csv, HEADER true);
+\copy staging_loyalty_cards(card_id, customer_id, card_status, issued_at, last_used_at) FROM '/data/csv/loyalty_cards.csv' WITH (FORMAT csv, HEADER true);
 
 \echo 'Upserting loyalty_cards...'
 
@@ -244,16 +212,7 @@ CREATE TEMP TABLE staging_transactions (
   transaction_timestamp  TIMESTAMP
 );
 
-\copy staging_transactions(
-  transaction_id,
-  card_id,
-  transaction_status,
-  channel,
-  payment_types_used,
-  transaction_timestamp
-)
-FROM '/data/csv/transactions.csv'
-WITH (FORMAT csv, HEADER true);
+\copy staging_transactions(transaction_id, card_id, transaction_status, channel, payment_types_used, transaction_timestamp) FROM '/data/csv/transactions.csv' WITH (FORMAT csv, HEADER true);
 
 \echo 'Upserting transactions...'
 
@@ -295,15 +254,7 @@ CREATE TEMP TABLE staging_transaction_items (
   unit_price           NUMERIC(10,2)
 );
 
-\copy staging_transaction_items(
-  transaction_id,
-  transaction_item_id,
-  product_id,
-  quantity,
-  unit_price
-)
-FROM '/data/csv/transaction_items.csv'
-WITH (FORMAT csv, HEADER true);
+\copy staging_transaction_items(transaction_id, transaction_item_id, product_id, quantity, unit_price) FROM '/data/csv/transaction_items.csv' WITH (FORMAT csv, HEADER true);
 
 \echo 'Upserting transaction_items...'
 
