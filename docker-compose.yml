@@ -32,10 +32,12 @@ services:
     ports:
       - "8000:8000"
     environment:
-      DATABASE_URL: postgresql://soufia:soufia@postgres:5432/datamarket_carrefour
+      DATABASE_URL: ${DATABASE_URL}
+      DATA_ENCRYPTION_KEY: ${DATA_ENCRYPTION_KEY}
     volumes:
       - ./api:/app
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
   streamlit:
     build:
       context: ./streamlit
@@ -48,6 +50,7 @@ services:
     environment:
       API_BASE_URL: http://api:8000
     volumes:
-      - ./streamlit:/app  
+      - ./streamlit:/app
+
 volumes:
   pgdata:

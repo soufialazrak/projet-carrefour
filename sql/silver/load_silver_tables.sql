@@ -56,3 +56,4 @@ TRUNCATE TABLE product_categories CASCADE;
 \copy datamarket.transaction_items(transaction_id, transaction_item_id, product_id, quantity, unit_price) FROM '/data/csv/transaction_items.csv' WITH (FORMAT csv, HEADER true);
 
 \echo 'Initial silver load completed successfully.'
+
