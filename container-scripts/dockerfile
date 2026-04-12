@@ -1,0 +1,17 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY scripts /app/scripts
+COPY data /app/data
+
+RUN mkdir -p /app/data/outputs
+
+WORKDIR /app/scripts/exports
+
+ENV DATA_DIR=/app/data
+
+CMD ["python", "run_all_exports.py"]

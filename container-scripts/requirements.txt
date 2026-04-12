@@ -1,0 +1,5 @@
+pandas
+cryptography
+azure-identity
+azure-keyvault-secrets
+azure-storage-file-datalake

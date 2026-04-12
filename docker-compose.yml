@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: soufia
       POSTGRES_DB: datamarket_carrefour
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./init:/docker-entrypoint-initdb.d

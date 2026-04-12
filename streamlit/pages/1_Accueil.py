@@ -52,13 +52,13 @@ st.markdown("""
 }
 
 .section-title {
-    color: #004f9f !important;
-    font-size: 24px !important;
-    font-weight: 800 !important;
-    text-align: center !important;
-    font-family: "Times New Roman", serif !important;
-    margin-bottom: 20px !important;
-    text-decoration: underline !important;
+    color: #004f9f;
+    font-family: "Times New Roman", Times, serif;
+    text-decoration: underline;
+    font-size: 32px;
+    font-weight: 700;
+    margin-top: 15px;
+    margin-bottom: 10px;
 }
 
 .kpi-wrapper {

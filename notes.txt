@@ -1,3 +1,27 @@
+pour lancer :  run_all_exports.py (creation des fichier csv)
+cd C:\Users\soufi\Documents\projet-carrefour\scripts\exports
+python run_all_exports.py
+
+********************************
+pour supprimé l'ancienne base de données :
+d'abort fermer les connexions actives à datamarket_carrefour.
+
+docker exec -it datamarket_carrefour_pg psql -U soufia -d postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'datamarket_carrefour' AND pid <> pg_backend_pid();"
+puis *:
+docker exec -it datamarket_carrefour_pg psql -U soufia -d postgres -c "DROP DATABASE IF EXISTS datamarket_carrefour;"
+
+**************************************
+recreer la nouvelle BD:
+ 
+docker exec -it datamarket_carrefour_pg psql -U soufia -d postgres -c "CREATE DATABASE datamarket_carrefour;"
+docker exec -it datamarket_carrefour_pg psql -U soufia -d datamarket_carrefour -f /sql/init/create_datamarket.sql
+docker exec -it datamarket_carrefour_pg psql -U soufia -d datamarket_carrefour -f /sql/silver/load_silver_tables.sql
+
+***********************************
+
+
+***********************************
+
 docker exec -it datamarket_carrefour_pg psql -U soufia -d datamarket_carrefour -f /sql/load_silver_tables.sql
 docker exec -it datamarket_carrefour_pg psql -U soufia -d datamarket_carrefour -f /sql/create_gold_all.sql
 
