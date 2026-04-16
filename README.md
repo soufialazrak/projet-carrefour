@@ -1,91 +1,172 @@
-# Data Market – Simulation d’un système de données retail
+# Data Market – Plateforme de valorisation des données retail
 
-Ce projet simule un système de données pour une grande distribution (type Carrefour).  
-L'objectif est de construire une architecture data permettant de collecter, transformer et exploiter des données clients, transactions et produits.
+Ce projet consiste à concevoir et implémenter une plateforme de type Data Market permettant de collecter, structurer, exposer et analyser des données dans un contexte de grande distribution (type Carrefour).
+
+L’objectif est de proposer une architecture complète allant de l’ingestion des données jusqu’à leur visualisation métier, en passant par leur transformation, leur sécurisation et leur industrialisation dans le cloud.
+
+Cette solution s’inscrit dans une logique de valorisation de la donnée, en mettant à disposition des utilisateurs métiers des informations fiables, accessibles et directement exploitables.
 
 ## Objectifs du projet
 
-- Construire un modèle de données retail réaliste
-- Simuler un système de fidélité
-- Mettre en place un pipeline de données
-- Permettre l'analyse du comportement client
+Ce projet vise à concevoir une solution data complète permettant de structurer, transformer et valoriser les données dans un contexte retail.
+
+- Concevoir une architecture data complète et cohérente  
+- Mettre en place un pipeline ETL de transformation des données  
+- Structurer un entrepôt de données (Data Warehouse)  
+- Exposer les données via une API  
+- Créer une interface de visualisation (dashboard)  
+- Garantir la sécurité et la conformité des données (RGPD)  
+- Préparer le passage en environnement cloud  
 
 ## Dataset utilisé
 
-Le projet utilise le dataset public **Olist E-commerce** qui a été adapté pour simuler un environnement retail.
+Le projet s’appuie sur le dataset public Olist E-commerce, adapté pour simuler un environnement retail.
 
-Transformations principales :
-- création de foyers clients
-- simulation de cartes de fidélité
-- transformation des commandes en transactions
-- génération de quantités réalistes
-- simplification des moyens de paiement
+Ce dataset a été enrichi et transformé afin de correspondre aux besoins métier d’un système de fidélité et d’analyse client.
+
+## Transformations principales
+
+- Création de foyers clients  
+- Simulation de cartes de fidélité  
+- Transformation des commandes en transactions  
+- Génération de quantités réalistes  
+- Simplification des moyens de paiement  
+- Enrichissement des données clients  
+
+## Schéma global de l’architecture
+
+```mermaid
+flowchart LR
+    A["Fichiers CSV Olist"]
+    subgraph LOCAL ["Environnement Local (Prototype)"]
+        B["ETL Python"]
+        C["PostgreSQL Local - Silver"]
+        D["Vues Gold"]
+        E["API FastAPI"]
+        F["Dashboard Streamlit"]
+        B --> C
+        C --> D
+        D --> E
+        D --> F
+    end
+    subgraph CLOUD ["Environnement Cloud Azure"]
+        G["Data Lake Raw"]
+        H["Pipeline de chargement"]
+        I["PostgreSQL Azure - Silver"]
+        J["Vues Gold"]
+        K["API Cloud"]
+        L["Dashboard Cloud"]
+        G --> H
+        H --> I
+        I --> J
+        J --> K
+        J --> L
+    end
+    A --> B
+    A --> G
+```
+
+## Architecture Data
+
+Le projet repose sur une architecture Medallion :
+
+- Bronze : données brutes  
+- Silver : données nettoyées  
+- Gold : données analytiques  
 
 ## Modèle de données
 
 Le modèle comprend les entités suivantes :
 
-- **Foyers**
-- **Customers**
-- **Loyalty_cards**
-- **Transactions**
-- **Transaction_items**
-- **Products**
-- **Product_categories**
+- Foyers  
+- Customers  
+- Loyalty_cards  
+- Transactions  
+- Transaction_items  
+- Products  
+- Product_categories  
 
-Les diagrammes MCD et MLD sont disponibles dans le dossier :
-**diagrams**
+Les diagrammes sont disponibles dans le dossier diagrams.
 
 ## Gold Layer
 
 La couche Gold contient des vues analytiques construites à partir des tables Silver.
 
-### Vues disponibles
+## Vues disponibles
 
-- transaction_amount : montant total d'une transaction
-- customer_value : valeur d'un client
-- foyer_rfm_metrics : métriques RFM par foyer
-- foyer_rfm_segments : segmentation marketing des foyers
+- transaction_amount  
+- customer_value  
+- foyer_rfm_metrics  
+- foyer_rfm_segments  
 
+## Sécurité des données
 
-## Architecture Data
-
-Ce projet suit une architecture Medallion :
-
-- **Bronze** : données brutes et nettoyage dans les notebooks
-- **Silver** : tables normalisées dans PostgreSQL
-- **Gold** : vues analytiques et segmentation RFM
-
+- Hachage des emails  
+- Chiffrement des données  
+- Gestion des accès  
+- RGPD  
 
 ## Structure du projet
 
 projet-carrefour/
 
 ├── data/  
-│   ├── archive/                 ( dataset original Olist )  
-│   └── outputs/                 ( fichiers CSV générés pour alimenter la base (couche Silver))
-
-├── notebooks/                   ( nettoyage et préparation des données (Bronze))
-
-├── scripts/
-│   └── exports/                 ( scripts Python générant les tables Silver à partir des données nettoyées )
-
-├── sql/
-│   └── gold/                    ( vues analytiques (couche Gold) )
-
-├── init/                        ( scripts SQL de création du schéma PostgreSQL (tables Silver) )
-
-├── diagrams/                    ( MCD et MLD du modèle de données )
-
-├── docker-compose.yml           ( infrastructure PostgreSQL via Docker )
-
-└── README.md
+├── notebooks/  
+├── scripts/  
+├── sql/  
+├── init/  
+├── api/  
+├── streamlit/  
+├── diagrams/  
+├── docker-compose.yml  
+└── README.md  
 
 ## Technologies utilisées
 
-- Python
-- Pandas
-- PostgreSQL
-- Docker
-- Git
-- Jupyter Notebook
+- Python  
+- PostgreSQL  
+- FastAPI  
+- Streamlit  
+- Docker  
+
+## API (FastAPI)
+
+Exemples :
+
+- /clients  
+- /transactions  
+
+## Visualisation (Streamlit)
+
+- KPIs  
+- Analyse client  
+
+## Migration vers le Cloud (Azure)
+
+Le projet évolue vers une architecture cloud.
+
+## Objectifs de la migration
+
+- Scalabilité  
+- Sécurité  
+
+## Architecture cible
+
+- Data Lake  
+- PostgreSQL  
+
+## Étapes de la migration
+
+- Migration des données  
+- Déploiement  
+
+## Prototype vs Production
+
+| Prototype (local) | Production (cloud) |
+|------------------|-------------------|
+| Environnement Docker local | Services managés sur Azure |
+| Stockage des données en CSV local | Stockage centralisé (Data Lake) |
+| PostgreSQL local | PostgreSQL managé (Azure) |
+| Accès limité à localhost | Accès sécurisé via Internet |
+| Faible scalabilité | Scalabilité élevée |
+| Maintenance manuelle | Supervision et gestion automatisées |
