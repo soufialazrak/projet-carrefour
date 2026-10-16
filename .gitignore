@@ -15,5 +15,8 @@ pgdata/
 .DS_Store
 Thumbs.db
 
+# Journaux d'execution PHENIX
+logs/
+
 
 notes.txt
