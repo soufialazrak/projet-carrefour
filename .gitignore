@@ -20,3 +20,9 @@ logs/
 
 
 notes.txt
+# Donnees locales du pipeline E7
+/data/archive/
+/data/bronze_work/
+/data/e7_outputs/
+/data/e7_exports/
+/data/e7_gold/
