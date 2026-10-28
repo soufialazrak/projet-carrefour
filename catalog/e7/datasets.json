@@ -1,0 +1,154 @@
+﻿{
+    "catalog_name":  "PHENIX Data Lake E7",
+    "version":  "1.0",
+    "datasets":  [
+                     {
+                         "source":  "PostgreSQL / export E7",
+                         "contains_personal_data":  true,
+                         "layer":  "silver",
+                         "bucket":  "phenix-silver",
+                         "format":  "CSV",
+                         "name":  "customers",
+                         "object_key":  "e7/customers.csv",
+                         "description":  "Clients du DataMarket PHENIX, avec protection des donnees personnelles",
+                         "row_count":  96096
+                     },
+                     {
+                         "name":  "households",
+                         "layer":  "silver",
+                         "bucket":  "phenix-silver",
+                         "object_key":  "e7/households.csv",
+                         "format":  "CSV",
+                         "row_count":  44237,
+                         "source":  "PostgreSQL / export E7",
+                         "contains_personal_data":  false,
+                         "description":  "Foyers clients"
+                     },
+                     {
+                         "name":  "loyalty_cards",
+                         "layer":  "silver",
+                         "bucket":  "phenix-silver",
+                         "object_key":  "e7/loyalty_cards.csv",
+                         "format":  "CSV",
+                         "row_count":  99438,
+                         "source":  "PostgreSQL / export E7",
+                         "contains_personal_data":  false,
+                         "description":  "Cartes de fidelite"
+                     },
+                     {
+                         "name":  "product_categories",
+                         "layer":  "silver",
+                         "bucket":  "phenix-silver",
+                         "object_key":  "e7/product_categories.csv",
+                         "format":  "CSV",
+                         "row_count":  74,
+                         "source":  "PostgreSQL / export E7",
+                         "contains_personal_data":  false,
+                         "description":  "Categories de produits"
+                     },
+                     {
+                         "name":  "products",
+                         "layer":  "silver",
+                         "bucket":  "phenix-silver",
+                         "object_key":  "e7/products.csv",
+                         "format":  "CSV",
+                         "row_count":  32951,
+                         "source":  "PostgreSQL / export E7",
+                         "contains_personal_data":  false,
+                         "description":  "Catalogue produits"
+                     },
+                     {
+                         "name":  "transactions",
+                         "layer":  "silver",
+                         "bucket":  "phenix-silver",
+                         "object_key":  "e7/transactions.csv",
+                         "format":  "CSV",
+                         "row_count":  99441,
+                         "source":  "PostgreSQL / export E7",
+                         "contains_personal_data":  false,
+                         "description":  "Transactions clients"
+                     },
+                     {
+                         "name":  "transaction_items",
+                         "layer":  "silver",
+                         "bucket":  "phenix-silver",
+                         "object_key":  "e7/transaction_items.csv",
+                         "format":  "CSV",
+                         "row_count":  112650,
+                         "source":  "PostgreSQL / export E7",
+                         "contains_personal_data":  false,
+                         "description":  "Lignes des transactions"
+                     },
+                     {
+                         "name":  "carrefour_customers",
+                         "layer":  "bronze",
+                         "bucket":  "phenix-bronze",
+                         "object_key":  "carrefour/carrefour_customers.csv",
+                         "format":  "CSV",
+                         "source":  "Fichiers sources Carrefour",
+                         "contains_personal_data":  true,
+                         "description":  "Donnees clients brutes contenant des identifiants clients et des informations geographiques - classification RGPD : donnees personnelles"
+                     },
+                     {
+                         "name":  "carrefour_order_items",
+                         "layer":  "bronze",
+                         "bucket":  "phenix-bronze",
+                         "object_key":  "carrefour/carrefour_order_items.csv",
+                         "format":  "CSV",
+                         "source":  "Fichiers sources Carrefour",
+                         "contains_personal_data":  true,
+                         "description":  "Donnees sources brutes - carrefour_order_items"
+                     },
+                     {
+                         "name":  "carrefour_order_payments",
+                         "layer":  "bronze",
+                         "bucket":  "phenix-bronze",
+                         "object_key":  "carrefour/carrefour_order_payments.csv",
+                         "format":  "CSV",
+                         "source":  "Fichiers sources Carrefour",
+                         "contains_personal_data":  true,
+                         "description":  "Donnees sources brutes - carrefour_order_payments"
+                     },
+                     {
+                         "name":  "carrefour_orders",
+                         "layer":  "bronze",
+                         "bucket":  "phenix-bronze",
+                         "object_key":  "carrefour/carrefour_orders.csv",
+                         "format":  "CSV",
+                         "source":  "Fichiers sources Carrefour",
+                         "contains_personal_data":  true,
+                         "description":  "Donnees sources brutes - carrefour_orders"
+                     },
+                     {
+                         "name":  "carrefour_product_categories",
+                         "layer":  "bronze",
+                         "bucket":  "phenix-bronze",
+                         "object_key":  "carrefour/carrefour_product_categories.csv",
+                         "format":  "CSV",
+                         "source":  "Fichiers sources Carrefour",
+                         "contains_personal_data":  false,
+                         "description":  "Donnees sources brutes - carrefour_product_categories"
+                     },
+                     {
+                         "name":  "carrefour_products",
+                         "layer":  "bronze",
+                         "bucket":  "phenix-bronze",
+                         "object_key":  "carrefour/carrefour_products.csv",
+                         "format":  "CSV",
+                         "source":  "Fichiers sources Carrefour",
+                         "contains_personal_data":  false,
+                         "description":  "Donnees sources brutes - carrefour_products"
+                     },
+                     {
+                         "name":  "transaction_amount",
+                         "layer":  "gold",
+                         "bucket":  "phenix-gold",
+                         "object_key":  "e7/transaction_amount.csv",
+                         "format":  "CSV",
+                         "row_count":  98666,
+                         "source":  "Transformation des transactions et lignes de transaction Silver",
+                         "contains_personal_data":  false,
+                         "description":  "Montant total calcule par transaction pour les analyses Gold"
+                     }
+                 ]
+}

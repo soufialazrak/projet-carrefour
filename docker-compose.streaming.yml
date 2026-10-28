@@ -1,0 +1,26 @@
+﻿services:
+  redpanda:
+    image: docker.redpanda.com/redpandadata/redpanda:v24.3.18
+    container_name: phenix_redpanda_e7
+    command:
+      - redpanda
+      - start
+      - --mode
+      - dev-container
+      - --smp
+      - "1"
+      - --memory
+      - 512M
+      - --reserve-memory
+      - 0M
+      - --kafka-addr
+      - internal://0.0.0.0:9092,external://0.0.0.0:19092
+      - --advertise-kafka-addr
+      - internal://redpanda:9092,external://localhost:19092
+    ports:
+      - "127.0.0.1:19092:19092"
+    volumes:
+      - redpanda_e7_data:/var/lib/redpanda/data
+
+volumes:
+  redpanda_e7_data:
