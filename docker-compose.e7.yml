@@ -1,0 +1,4 @@
+﻿services:
+  postgres:
+    volumes:
+      - ./data/e7_exports:/data/e7:ro
