@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.routers import gold
+from app.routers import gold, streaming
 
 app = FastAPI(
     title="DataMarket Carrefour API",
@@ -7,8 +7,11 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# On garde uniquement les endpoints utiles à l'app Streamlit
+# Endpoints historiques DataMarket
 app.include_router(gold.router, tags=["Gold"])
+
+# Endpoints Kafka streaming E7
+app.include_router(streaming.router)
 
 
 @app.get("/")

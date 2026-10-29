@@ -101,6 +101,7 @@ def apply_global_styles():
     """), unsafe_allow_html=True)
 
 
+
 def sidebar(active_page: str):
     apply_global_styles()
 
@@ -110,34 +111,61 @@ def sidebar(active_page: str):
             logo = Image.open("assets/carrefour_logo.png")
             st.image(logo, width=140)
 
-        st.markdown('<div class="sidebar-title">Navigation</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="sidebar-title">Navigation</div>',
+            unsafe_allow_html=True
+        )
 
         if active_page == "Accueil":
-            st.markdown('<div class="active-link">Accueil</div>', unsafe_allow_html=True)
+            st.markdown(
+                '<div class="active-link">Accueil</div>',
+                unsafe_allow_html=True
+            )
         else:
             if st.button("Accueil"):
                 st.switch_page("app.py")
 
         if active_page == "Vue":
-            st.markdown("<div class='active-link'>Vue d'ensemble</div>", unsafe_allow_html=True)
+            st.markdown(
+                "<div class='active-link'>Vue d'ensemble</div>",
+                unsafe_allow_html=True
+            )
         else:
             if st.button("Vue d'ensemble"):
                 st.switch_page("pages/1_accueil.py")
 
         if active_page == "RFM":
-            st.markdown('<div class="active-link">Segmentation RFM foyers</div>', unsafe_allow_html=True)
+            st.markdown(
+                '<div class="active-link">Segmentation RFM foyers</div>',
+                unsafe_allow_html=True
+            )
         else:
             if st.button("Segmentation RFM foyers"):
                 st.switch_page("pages/2_segmentation_rfm_foyers.py")
 
         if active_page == "Clients":
-            st.markdown('<div class="active-link">Segmentation clients</div>', unsafe_allow_html=True)
+            st.markdown(
+                '<div class="active-link">Segmentation clients</div>',
+                unsafe_allow_html=True
+            )
         else:
             if st.button("Segmentation clients"):
                 st.switch_page("pages/3_segmentation_clients.py")
 
         if active_page == "Recherche":
-            st.markdown('<div class="active-link">Recherche</div>', unsafe_allow_html=True)
+            st.markdown(
+                '<div class="active-link">Recherche</div>',
+                unsafe_allow_html=True
+            )
         else:
             if st.button("Recherche"):
                 st.switch_page("pages/4_recherche.py")
+
+        if active_page == "Streaming":
+            st.markdown(
+                '<div class="active-link">Streaming Kafka</div>',
+                unsafe_allow_html=True
+            )
+        else:
+            if st.button("Streaming Kafka"):
+                st.switch_page("pages/5_streaming_kafka.py")
