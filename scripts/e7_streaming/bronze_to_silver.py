@@ -78,7 +78,7 @@ def normalize(event):
 
 def main():
     client = Minio(
-        "localhost:9000",
+        os.getenv("MINIO_ENDPOINT", "localhost:9000"),
         access_key=os.environ["MINIO_ROOT_USER"],
         secret_key=os.environ["MINIO_ROOT_PASSWORD"],
         secure=False

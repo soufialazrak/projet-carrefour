@@ -19,14 +19,17 @@ PREFIX = "streaming/transactions/"
 
 
 def get_database_url():
-    """Adapte la connexion Docker pour une execution depuis Windows."""
+    """Adapte la connexion PostgreSQL selon l'environnement."""
     url = os.environ["DATABASE_URL"]
+
+    # Dans Airflow, conserver l'adresse PostgreSQL du réseau Docker.
+    if os.getenv("RUNNING_IN_DOCKER") == "1":
+        return url
+
+    # Sur Windows, conserver la connexion locale existante.
     parsed = urlsplit(url)
 
-    hostname = parsed.hostname
-    port = parsed.port
-
-    if hostname == "postgres":
+    if parsed.hostname == "postgres":
         username = parsed.username or ""
         password = parsed.password
         credentials = username
@@ -47,8 +50,9 @@ def get_database_url():
 
 
 def get_minio_client():
+    """Connexion MinIO compatible Windows et Docker."""
     return Minio(
-        "localhost:9000",
+        os.getenv("MINIO_ENDPOINT", "localhost:9000"),
         access_key=os.environ["MINIO_ROOT_USER"],
         secret_key=os.environ["MINIO_ROOT_PASSWORD"],
         secure=False,
