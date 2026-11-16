@@ -1,0 +1,15 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "IndexSeulementToutesCouches",
+      "Effect": "Allow",
+      "Action": ["s3:ListBucket", "s3:GetBucketLocation"],
+      "Resource": [
+        "arn:aws:s3:::phenix-bronze",
+        "arn:aws:s3:::phenix-silver",
+        "arn:aws:s3:::phenix-gold"
+      ]
+    }
+  ]
+}

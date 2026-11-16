@@ -37,9 +37,14 @@ services:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
       DATABASE_URL: ${DATABASE_URL}
+      # E7 - gouvernance : compte RGPD dedie (droits limites) et supervision
+      RGPD_DATABASE_URL: ${RGPD_DATABASE_URL}
+      REDPANDA_BOOTSTRAP: redpanda:9092
+      MONITORING_LOG_DIR: /opt/airflow/project/logs
     volumes:
       - ./airflow/dags:/opt/airflow/dags
       - ./scripts:/opt/airflow/project/scripts:ro
+      - ./logs:/opt/airflow/project/logs
     command: standalone
     networks:
       - airflow_internal

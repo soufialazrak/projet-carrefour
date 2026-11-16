@@ -1,0 +1,23 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AlimentationBronzeEcriture",
+      "Effect": "Allow",
+      "Action": ["s3:PutObject"],
+      "Resource": ["arn:aws:s3:::phenix-bronze/*"]
+    },
+    {
+      "Sid": "AntiDoublonStreamingUniquement",
+      "Effect": "Allow",
+      "Action": ["s3:GetObject"],
+      "Resource": ["arn:aws:s3:::phenix-bronze/streaming/*"]
+    },
+    {
+      "Sid": "VerificationBucketBronze",
+      "Effect": "Allow",
+      "Action": ["s3:ListBucket", "s3:GetBucketLocation"],
+      "Resource": ["arn:aws:s3:::phenix-bronze"]
+    }
+  ]
+}

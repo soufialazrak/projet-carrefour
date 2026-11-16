@@ -232,7 +232,7 @@ with DAG(
     description="Pipeline Kafka Bronze Silver PostgreSQL - E7",
     default_args=default_args,
     start_date=datetime(2026, 10, 1),
-    schedule_interval=None,
+    schedule_interval="@hourly",
     catchup=False,
     max_active_runs=1,
     tags=["carrefour", "e7", "streaming", "datamarket"],

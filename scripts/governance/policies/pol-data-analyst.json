@@ -1,0 +1,26 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "RecuperationSilverGold",
+      "Effect": "Allow",
+      "Action": ["s3:GetObject"],
+      "Resource": ["arn:aws:s3:::phenix-silver/*", "arn:aws:s3:::phenix-gold/*"]
+    },
+    {
+      "Sid": "IndexSilverGold",
+      "Effect": "Allow",
+      "Action": ["s3:ListBucket", "s3:GetBucketLocation"],
+      "Resource": ["arn:aws:s3:::phenix-silver", "arn:aws:s3:::phenix-gold"]
+    },
+    {
+      "Sid": "RGPDInterdictionDonneesPersonnelles",
+      "Effect": "Deny",
+      "Action": ["s3:GetObject"],
+      "Resource": [
+        "arn:aws:s3:::phenix-silver/e7/customers.csv",
+        "arn:aws:s3:::phenix-silver/e7/loyalty_cards.csv"
+      ]
+    }
+  ]
+}

@@ -11,8 +11,6 @@ Bronze;phenix-bronze;streaming/transactions/517fd01c-f517-4258-832f-e447371d0c52
 Bronze;phenix-bronze;streaming/transactions/77db478e-8847-4bb8-880b-3befaef4777b.json;json;247;2026-10-28T19:31:28.061000+00:00;s3://phenix-bronze/streaming/transactions/77db478e-8847-4bb8-880b-3befaef4777b.json
 Bronze;phenix-bronze;streaming/transactions/c8ee76b7-56c9-4697-a3d9-74dc34988b74.json;json;255;2026-10-28T19:31:28.191000+00:00;s3://phenix-bronze/streaming/transactions/c8ee76b7-56c9-4697-a3d9-74dc34988b74.json
 Bronze;phenix-bronze;streaming/transactions/cbd0399d-dd40-4535-839f-5d3b3f3ba56a.json;json;255;2026-10-28T19:31:28.120000+00:00;s3://phenix-bronze/streaming/transactions/cbd0399d-dd40-4535-839f-5d3b3f3ba56a.json
-Bronze;phenix-bronze;tests/categories_test.csv;csv;64;2026-10-16T19:03:44.665000+00:00;s3://phenix-bronze/tests/categories_test.csv
-Bronze;phenix-bronze;tests/products_test.csv;csv;70;2026-10-16T19:03:44.735000+00:00;s3://phenix-bronze/tests/products_test.csv
 Silver;phenix-silver;e7/customers.csv;csv;46563223;2026-10-23T19:51:44.653000+00:00;s3://phenix-silver/e7/customers.csv
 Silver;phenix-silver;e7/households.csv;csv;1769515;2026-10-23T19:51:43.667000+00:00;s3://phenix-silver/e7/households.csv
 Silver;phenix-silver;e7/loyalty_cards.csv;csv;11067570;2026-10-23T19:51:44.980000+00:00;s3://phenix-silver/e7/loyalty_cards.csv
@@ -26,5 +24,3 @@ Silver;phenix-silver;streaming/transactions/517fd01c-f517-4258-832f-e447371d0c52
 Silver;phenix-silver;streaming/transactions/77db478e-8847-4bb8-880b-3befaef4777b.json;json;250;2026-10-30T12:01:33.433000+00:00;s3://phenix-silver/streaming/transactions/77db478e-8847-4bb8-880b-3befaef4777b.json
 Silver;phenix-silver;streaming/transactions/c8ee76b7-56c9-4697-a3d9-74dc34988b74.json;json;257;2026-10-30T12:01:33.444000+00:00;s3://phenix-silver/streaming/transactions/c8ee76b7-56c9-4697-a3d9-74dc34988b74.json
 Silver;phenix-silver;streaming/transactions/cbd0399d-dd40-4535-839f-5d3b3f3ba56a.json;json;258;2026-10-30T12:01:33.455000+00:00;s3://phenix-silver/streaming/transactions/cbd0399d-dd40-4535-839f-5d3b3f3ba56a.json
-Silver;phenix-silver;tests/categories_test.csv;csv;64;2026-10-23T08:51:44.307000+00:00;s3://phenix-silver/tests/categories_test.csv
-Silver;phenix-silver;tests/products_test.csv;csv;70;2026-10-23T08:51:44.367000+00:00;s3://phenix-silver/tests/products_test.csv
