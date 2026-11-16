@@ -149,9 +149,6 @@ st.markdown(
     '<div class="page-subtitle-small">Carrefour Data Market | Compétence C19</div>',
     unsafe_allow_html=True,
 )
-st.divider()
-st.caption("Indicateurs issus des derniers contrôles techniques : aucune actualisation automatique pour le moment.")
-
 
 # ============================================================
 # 1. DOCKER — cercle à gauche, détail des conteneurs à droite
